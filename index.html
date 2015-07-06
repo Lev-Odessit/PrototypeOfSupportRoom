@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html ng-app="customerApp">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <title>AngularJS</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="Lev-Odessit">
+
+        <link rel="stylesheet" href="styles/custom.css" />
+        <link rel="stylesheet" href="styles/bootstrap.css" />
+
+        <script src="scripts/angular.min.js"></script>
+        <script src="scripts/customerApp.js"></script>
+
+    </head>
+
+    <body ng-controller="BodyController">
+
+        <header>
+            <h1 class="text-center">Добро пожаловать <b>{{customer.name}}</b> !</h1>
+            <h2 class="text-center">Обращение в сапортную службу:</h2>
+        </header>
+
+        <div class="list-group container">
+
+            <div class="list-group-item container">
+
+                <section ng-controller="TabController as tab">
+
+                    <ul class="nav nav-pills">
+                        <li ng-class="{ active:tab.isSet(1) }">
+                            <a href ng-click="tab.setTab(1)">Создание запроса</a>
+                        </li>
+                        <li ng-class="{ active:tab.isSet(2) }">
+                            <a href ng-click="tab.setTab(2)">Созданные запросы</a>
+                        </li>
+                        <li ng-class="{ active:tab.isSet(3) }">
+                            <a href ng-click="tab.setTab(3)">Решённые запросы</a>
+                        </li>
+                    </ul>
+
+                    <div ng-show="tab.isSet(1)">
+
+                        <form name="reviewForm" ng-controller="RequestsController as requestCtrl" ng-submit="requestCtrl.addRequest()">
+
+                            <blockquote>
+                                <h3>{{requestCtrl.request.title}} </h3>
+                                <p>{{requestCtrl.request.body}} </p>
+                                <strong ng-show="requestCtrl.request.rate">Важность: {{requestCtrl.request.rate}}</strong>
+                            </blockquote>
+
+                            <h2>Форма Запроса:</h2>
+                            <fieldset class="form-group">
+                                <input ng-model="requestCtrl.request.title" type="text" class="form-control" placeholder="Тема запроса" title="Тема запроса" />
+                            </fieldset>
+                            <fieldset class="form-group">
+                                <textarea ng-model="requestCtrl.request.body" class="form-control" placeholder="Суть запроса" title="Суть запроса"></textarea>
+                            </fieldset>
+                            <fieldset class="form-group">
+                                <select ng-model="requestCtrl.request.rate" class="form-control" ng-options="rate for rate in [5,4,3,2,1]" title="Важность">
+                                    <option value>Важность вопроса</option>
+                                </select>
+                            </fieldset>
+                            <fieldset class="form-group">
+                                <input type="submit" class="btn btn-primary" value="Создать запрос" />
+                            </fieldset>
+
+                        </form>
+
+                    </div>
+
+                    <div ng-show="tab.isSet(2)" ng-controller="CreatedRequestsController as formWithRequestsCtrl">
+
+                            <ul>
+
+                                <h2 ng-show="requests.length > 0">Запросы:</h2>
+                                <h2 ng-show="requests.length < 1">Вы ещё не создали ни одного запроса.<a href ng-click="tab.setTab(1)"> Создать запрос.</a></h2>
+                                <li ng-repeat="request in requests">
+
+                                    <blockquote>
+
+                                        <h3><b>Заявка №: </b>{{$index + 1}}</h3>
+                                        <h3><b>Тема запроса: </b>{{request.title}}</h3>
+                                        <p><b>Суть запроса: </b>{{request.body}}</p>
+                                        <p><b>Создан: </b>{{request.createdOn | date:'MM/dd/yyyy @ h:mma'}}</p>
+                                        <strong>Важность: {{request.rate}}</strong>
+
+                                        <button class="btn btn-primary col-md-offset-3" ng-click="formWithRequestsCtrl.deleteRequest($index)">Удалить</button>
+
+                                    </blockquote>
+
+
+                                </li>
+
+                            </ul>
+
+                    </div>
+
+                    <div ng-show="tab.isSet(3)" ng-controller="RemovedRequestsController as formWithRemovedRequestsCtrl">
+
+                        <ul>
+
+                            <h2 ng-show="removedRequests.length > 0">Запросы:</h2>
+                            <h2 ng-show="removedRequests.length < 1">Тут будет отображаться список решённых запросов.</h2>
+                            <li ng-repeat="removedRequest in removedRequests">
+
+                                <blockquote>
+
+                                    <h3><b>Заявка №: </b>{{$index + 1}}</h3>
+                                    <h3><b>Тема запроса: </b>{{removedRequest.title}}</h3>
+                                    <p><b>Суть запроса: </b>{{removedRequest.body}}</p>
+                                    <p><b>Создан: </b>{{removedRequest.createdOn | date:'MM/dd/yyyy @ h:mma'}}</p>
+                                    <strong>Важность: {{removedRequest.rate}}</strong>
+
+                                    <button class="btn btn-primary col-md-offset-3" ng-click="formWithRemovedRequestsCtrl.restoreRequest($index)">Восстановить запрос</button>
+
+                                </blockquote>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </section>
+            </div>
+
+        </div>
+
+    </body>
+
+</html>
